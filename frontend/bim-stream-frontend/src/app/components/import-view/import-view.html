@@ -1,0 +1,73 @@
+<ng-container *ngIf="data as d">
+  <div class="card bg-base-100 shadow-sm">
+    <div class="card-body">
+      <div class="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h2 class="card-title">Import result</h2>
+          <p class="text-sm opacity-70">Metadata extracted from the IFC file.</p>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <span class="badge badge-outline">ID: {{ d.import.id }}</span>
+          <span class="badge badge-outline">Schema: {{ d.import.ifcSchema || '-' }}</span>
+        </div>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-3 mt-4">
+        <div class="rounded-box bg-base-200 p-4">
+          <div class="text-xs opacity-70">Created</div>
+          <div class="font-medium">{{ d.import.createdAt }}</div>
+        </div>
+
+        <div class="rounded-box bg-base-200 p-4">
+          <div class="text-xs opacity-70">Source</div>
+          <div class="font-medium">{{ d.import.sourceApplication || '-' }}</div>
+        </div>
+
+        <div class="rounded-box bg-base-200 p-4">
+          <div class="text-xs opacity-70">Project / Site</div>
+          <div class="font-medium">
+            {{ d.import.projectName || '-' }} / {{ d.import.siteName || '-' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <div class="text-xs opacity-70">Key</div>
+        <code class="block bg-base-200 rounded px-3 py-2 text-xs overflow-x-auto">{{ d.key }}</code>
+      </div>
+
+      <div class="mt-4 flex flex-wrap gap-2">
+        <ng-container *ngFor="let row of tableData">
+          <span *ngIf="row.count > 0" class="badge badge-primary">
+            {{ row.elementType }}: {{ row.count }}
+          </span>
+        </ng-container>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-sm mt-6">
+    <div class="card-body">
+      <h3 class="text-lg font-semibold">Element counts</h3>
+
+      <div class="overflow-x-auto mt-2">
+        <table class="table table-zebra w-full">
+          <thead>
+          <tr>
+            <th>Element</th>
+            <th class="text-right">Count</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let row of tableData">
+            <td class="font-medium">{{ row.elementType }}</td>
+            <td class="text-right">{{ row.count }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-container>

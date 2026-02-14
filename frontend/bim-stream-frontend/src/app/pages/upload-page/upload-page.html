@@ -1,0 +1,118 @@
+<div class="min-h-screen bg-base-200 text-base-content">
+    
+    <!-- tiny theme accent bar -->
+    <div class="h-1 w-full bg-primary"></div>
+  
+    <div class="navbar bg-base-100 border-b border-base-300">
+      <div class="flex-1">
+        <a class="btn btn-ghost text-xl">
+          <span class="text-primary">BIM</span><span>-Stream</span>
+        </a>
+  
+        <span class="ml-2 text-sm opacity-70 hidden sm:inline">
+          Upload IFC → async processing → results
+        </span>
+      </div>
+    </div>
+  
+    <div class="mx-auto max-w-5xl p-4 md:p-8 space-y-6">
+  
+      <!-- Hero -->
+      <div class="hero bg-base-100 rounded-box border border-base-300">
+        <div class="hero-content flex-col items-start">
+          <h1 class="text-3xl md:text-4xl font-bold">
+            <span class="text-primary">IFC</span> upload demo
+          </h1>
+  
+          <p class="opacity-80">
+            Upload an IFC file. The backend processes it asynchronously (S3 → SQS → ECS → RDS),
+            and this UI polls until the metadata is ready.
+          </p>
+        </div>
+      </div>
+  
+      <!-- Upload Card -->
+      <div class="card bg-base-100 border border-base-300">
+        <div class="card-body">
+          <div class="flex items-center justify-between gap-4 flex-wrap">
+            <h2 class="card-title">Upload IFC</h2>
+  
+            <div class="flex items-center gap-2">
+              <span *ngIf="error" class="badge badge-error badge-lg">Error</span>
+              <span *ngIf="!error && uploading" class="badge badge-info badge-lg">Uploading</span>
+              <span *ngIf="!error && !uploading && processing" class="badge badge-warning badge-lg">Processing</span>
+              <span *ngIf="!error && !uploading && !processing && importResult" class="badge badge-success badge-lg">Done</span>
+              <span *ngIf="!error && !uploading && !processing && !importResult" class="badge badge-ghost badge-lg border border-base-300">
+                Idle
+              </span>
+            </div>
+          </div>
+  
+          <!-- subtle theme divider via border -->
+          <div class="mt-3 border-t border-base-300"></div>
+  
+          <div class="grid gap-4 md:grid-cols-3 items-end mt-3">
+  
+            <!-- File input -->
+            <div class="md:col-span-2">
+              <label class="form-control w-full">
+                <div class="label">
+                  <span class="label-text">Choose IFC file</span>
+                </div>
+  
+                <input
+                  type="file"
+                  accept=".ifc"
+                  class="file-input file-input-bordered w-full border-base-300 focus:border-primary"
+                  (change)="onFileSelected($event)"
+                />
+  
+                <div class="label" *ngIf="selectedFile as f">
+                  <span class="label-text-alt opacity-70">
+                    Selected: <span class="font-medium text-primary">{{ f.name }}</span>
+                  </span>
+                </div>
+              </label>
+            </div>
+  
+            <!-- Upload button -->
+            <div class="md:col-span-1">
+              <button
+                class="btn btn-primary w-full"
+                (click)="onUpload()"
+                [disabled]="!selectedFile || uploading || processing"
+              >
+                <span *ngIf="uploading" class="loading loading-spinner"></span>
+                <span *ngIf="!uploading">Upload</span>
+                <span *ngIf="uploading">Uploading…</span>
+              </button>
+            </div>
+          </div>
+  
+          <!-- Progress -->
+          <div *ngIf="uploading || processing" class="mt-2">
+            <progress class="progress progress-primary w-full" max="100"></progress>
+          </div>
+  
+          <!-- Key -->
+          <div *ngIf="lastKey" class="mt-2">
+            <div class="text-sm opacity-70">Key</div>
+            <code class="block bg-base-200 border border-base-300 rounded-box px-3 py-2 text-xs overflow-x-auto">
+              {{ lastKey }}
+            </code>
+          </div>
+  
+          <!-- Error -->
+          <div *ngIf="error" class="alert alert-error mt-3">
+            <span><strong>Error:</strong> {{ error }}</span>
+          </div>
+  
+        </div>
+      </div>
+  
+      <!-- Result -->
+      <app-import-view *ngIf="importResult" [data]="importResult"></app-import-view>
+  
+    </div>
+  </div>
+  
